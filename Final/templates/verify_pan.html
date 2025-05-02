@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PAN KYC Verification - Verifund</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .verification-container {
+      background-image: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+    }
+    .progress-bar {
+      transition: width 0.6s ease;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+  <div class="container mx-auto flex items-center justify-center">
+    <!-- Left Info Section -->
+    <div class="hidden md:flex flex-col items-center justify-center bg-blue-600 text-white p-12 rounded-l-2xl shadow-lg h-[650px] w-full max-w-md verification-container bg-cover bg-center" style="background-image: url('https://akm-img-a-in.tosshub.com/indiatoday/images/story/202412/pan-card-for-minors-102808800-1x1.jpg?VersionId=X35qQHMCo.FsEmIcAuLRls8rJ_I8ZgX6');">
+      <div class="text-center bg-grey-1000/70 p-6 rounded-xl">
+        <h1 class="text-4xl font-bold text-blue-200 mb-4">PAN Verification</h1>
+        <p class="text-xl mb-8">Secure KYC process with Verifund</p>
+        <div class="bg-white/10 p-6 rounded-xl mb-8">
+          <h3 class="text-xl text-black-600 font-semibold mb-3">Requirements:</h3>
+          <ul class="text-left space-y-2 text-white">
+            <li class="flex items-center"><span class="mr-2 text-green-300">✓</span> Clear PAN card image</li>
+            <li class="flex items-center"><span class="mr-2 text-green-300">✓</span> Matching personal details</li>
+            <li class="flex items-center"><span class="mr-2 text-green-300">✓</span> Valid PAN number format</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Form Section -->
+    <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md h-[650px] flex flex-col justify-center md:rounded-l-none md:rounded-r-2xl">
+      <div class="text-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-800">PAN KYC Verification</h2>
+        <p class="text-gray-600 mt-2">Complete your identity verification</p>
+      </div>
+      
+      <form id="kycForm" method="post" class="space-y-4">
+        {% csrf_token %}
+        <div>
+          <label for="panNumber" class="block text-sm font-medium text-gray-700 mb-1">PAN Number</label>
+          <input type="text" id="panNumber" name="pan_number" required 
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                 placeholder="ABCDE1234F">
+        </div>
+        
+        <div>
+          <label for="dob" class="block text-sm font-medium text-gray-700 mb-1">Date of Birth (DDMMYYYY)</label>
+          <input type="text" id="dob" name="dob" required placeholder="e.g. 01012000"
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+        </div>
+        
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name as per PAN</label>
+          <input type="text" id="name" name="full_name" required 
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                 placeholder="As shown on your PAN card">
+        </div>
+        
+        <div class="pt-2">
+          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center">
+            <span id="submitText">Verify PAN</span>
+            <svg id="loadingSpinner" class="hidden animate-spin ml-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </button>
+        </div>
+      </form>
+
+      <div id="progressContainer" class="hidden mt-4">
+        <div class="flex justify-between text-sm text-gray-600 mb-1">
+          <span>Verification Progress</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2.5">
+          <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full progress-bar" style="width: 0%"></div>
+        </div>
+      </div>
+
+      {% if error %}
+        <p class="mt-4 text-center text-red-600">{{ error }}</p>
+      {% endif %}
+
+      {% if result %}
+        <div class="mt-4 bg-gray-50 p-4 rounded text-sm text-gray-800 whitespace-pre-wrap">{{ result }}</div>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>
