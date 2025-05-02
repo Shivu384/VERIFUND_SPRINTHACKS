@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Borrower Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .range-slider::-webkit-slider-thumb {
+            background: #374151; /* Dark gray thumb */
+            border: 1px solid #4b5563; /* Slightly lighter border */
+        }
+
+        .range-slider::-moz-range-thumb {
+            background: #374151;
+            border: 1px solid #4b5563;
+        }
+
+        .range-slider::-ms-thumb {
+            background: #374151;
+            border: 1px solid #4b5563;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="flex">
+        <div class="w-64 bg-gray-900 text-gray-100 h-screen fixed">
+            <div class="text-center py-6 px-4 border-b border-gray-800">
+                <h1 class="text-2xl font-bold">LoanPlatform</h1>
+                <p class="mt-2 text-sm text-gray-400">Borrower Dashboard</p>
+            </div>
+            <ul class="space-y-2 mt-6 p-4">
+                <li>
+                    <a href="#" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors">
+                        <i class="fas fa-home mr-3 text-gray-400"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors">
+                        <i class="fas fa-hand-holding-usd mr-3 text-gray-400"></i> Loans
+                    </a>
+                </li>
+                <li>
+                    <a href="/negotiation_offer_made" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors">
+                        <i class="fas fa-percentage mr-3 text-gray-400"></i> Offers
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors">
+                        <i class="fas fa-cog mr-3 text-gray-400"></i> Settings
+                    </a>
+                </li>
+                <li class="mt-8 border-t border-gray-800 pt-4">
+                    <a href="#" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors">
+                        <i class="fas fa-sign-out-alt mr-3 text-gray-400"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="flex-1 p-8 ml-64">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex items-center justify-between mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">Borrower Dashboard</h1>
+                    <div class="flex items-center space-x-4">
+                        <button id="addOfferBtn" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition-colors flex items-center">
+                            <i class="fas fa-plus mr-2"></i> Add Offer
+                        </button>
+                        <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-700 font-semibold">
+                            {{ user.first_name|default:user.username|slice:":2"|upper }}
+                        </div>
+                    </div>
+                </div>
+                <div id="offerModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+                    <div class="bg-white rounded-xl p-6 w-full max-w-md">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold">Create New Offer</h3>
+                            <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <form id="offerForm" class="space-y-4">
+                          
+                            <div>
+                                <label for="offerAmount" class="block text-sm font-medium text-gray-700 mb-1">Amount (₹)</label>
+                                <input type="number" id="offerAmount" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                            <div>
+                                <label for="offerInterest" class="block text-sm font-medium text-gray-700 mb-1">Interest Rate (%)</label>
+                                <input type="number" step="0.1" id="offerInterest" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                            <div>
+                                <label for="offerTenor" class="block text-sm font-medium text-gray-700 mb-1">Tenor</label>
+                                <input type="number" id="offerTenor" name="offerTenor" required min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Enter tenor in months">
+                            </div>
+                            <div>
+                                
+                            </div>
+                            <div class="flex justify-end space-x-3 pt-2">
+                                <button type="button" id="cancelOffer" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+                                <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg">Create Offer</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+
+                <div class="bg-gradient-to-r from-gray-800 to-gray-700 text-gray-100 rounded-xl p-6 mb-6 shadow-md">
+                    <h2 class="text-xl font-semibold mb-2">Welcome back, Ananya!</h2>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-300">Available Borrowing Limit</p>
+                            <p class="text-2xl font-bold">₹</p>
+                        </div>
+                        <div class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center">
+                            <i class="fas fa-wallet text-2xl text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+                <form method="get">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+            <label for="minAmount" class="block text-sm font-medium text-gray-700 mb-2">Min Amount (₹)</label>
+            <input type="number" id="minAmount" name="minAmount" value="{{ request.GET.minAmount }}" class="w-full px-4 py-2 border rounded-lg">
+        </div>
+
+        <div>
+            <label for="maxInterest" class="block text-sm font-medium text-gray-700 mb-2">Max Interest Rate</label>
+            <div class="relative pt-2">
+                <input type="range" id="maxInterest" name="maxInterest" min="5" max="20" value="{{ request.GET.maxInterest|default:20 }}" class="w-full">
+                <div class="flex justify-between text-sm text-gray-500 mt-1">
+                    <span>5%</span>
+                    <span id="interestDisplay">{{ request.GET.maxInterest|default:"20" }}%</span>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <label for="tenor" class="block text-sm font-medium text-gray-700 mb-2">Tenor</label>
+            <select id="tenor" name="tenor" class="w-full px-4 py-2 border rounded-lg">
+                <option value="">Any Tenor</option>
+                <option value="3 months" {% if request.GET.tenor == "3 months" %}selected{% endif %}>3 months</option>
+                <option value="6 months" {% if request.GET.tenor == "6 months" %}selected{% endif %}>6 months</option>
+                <option value="1 year" {% if request.GET.tenor == "1 year" %}selected{% endif %}>1 year</option>
+                <option value="2 years" {% if request.GET.tenor == "2 years" %}selected{% endif %}>2 years</option>
+            </select>
+        </div>
+    </div>
+    <button type="submit" class="mt-4 bg-gray-800 text-white px-6 py-2 rounded-lg">
+        Apply Filters
+    </button>
+</form>
+
+                <div class="grid grid-cols-1 gap-6">
+                    <div class="grid grid-cols-1 gap-6">
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                            <h2 class="text-lg font-semibold text-gray-800 mb-4">Available Offers</h2>
+                            <div id="offers" class="space-y-4">
+                                {% if offers %}
+                                    {% for offer in offers %}
+                                        <div class="border p-4 rounded shadow">
+                                            <p><strong>Amount:</strong> ₹{{ offer.amount }}</p>
+                                            <p><strong>Interest Rate:</strong> {{ offer.interest_rate }}%</p>
+                                            <p><strong>Duration:</strong> {{ offer.duration_months }} months</p>
+                                            <p><strong>Lender:</strong> {{ offer.lender.username }}</p>
+                                            <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 mt-2 rounded"
+                                                onclick="openNegotiationModal({{ offer.id }}, '{{ offer.amount }}', '{{ offer.interest_rate }}', '{{ offer.duration_months }}')">
+                                                Negotiate
+                                            </button>
+                                        </div>
+                                        
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="text-gray-500">No matching offers found.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="negotiationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="bg-white rounded-xl p-8 w-96 shadow-lg relative">
+                <h3 class="text-xl font-semibold mb-4">Propose Negotiation</h3>
+                <form method="post" action="{% url 'submit_negotiation' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="offer_id" id="negotiationOfferId">
+    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">Proposed Amount</label>
+                        <input type="number" name="amount" id="negAmount" required class="w-full p-2 border rounded">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">Proposed Interest (%)</label>
+                        <input type="number" step="0.1" name="interest" id="negInterest" required class="w-full p-2 border rounded">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">Proposed Duration (Months)</label>
+                        <input type="number" name="duration" id="negDuration" required class="w-full p-2 border rounded">
+                    </div>
+    
+                    <div class="flex justify-end">
+                        <button type="button" onclick="closeNegotiationModal()" class="mr-2 px-4 py-2 bg-gray-300 rounded">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+
+    <script src="/static/borrower.js">
+
+    </script>
+
+</body>
+</html>

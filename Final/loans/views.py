@@ -164,3 +164,68 @@ def verify_pan(request):
 
 def option(request):
     return render(request,"base.html")
+
+@profile_completion_required
+def borrower_dashboard(request):
+    offers = LoanOffer.objects.all()
+
+    min_amount = request.GET.get('minAmount')
+    max_interest = request.GET.get('maxInterest')
+    tenor = request.GET.get('tenor')
+
+    try:
+        if min_amount:
+            min_amount = int(min_amount)
+            offers = offers.filter(amount__lte=min_amount)
+
+        if max_interest:
+            max_interest = float(max_interest)
+            offers = offers.filter(interest_rate__lte=max_interest)
+
+        if tenor:
+            tenor_map = {
+                "3 months": 3,
+                "6 months": 6,
+                "1 year": 12,
+                "2 years": 24,
+            }
+            months = tenor_map.get(tenor)
+            if months:
+                offers = offers.filter(duration_months=months)
+    except (ValueError, TypeError):
+        messages.error(request, "Invalid filter input.")
+
+    return render(request, 'borrower_dashboard.html', {
+        'offers': offers,
+        'user': request.user,
+    })
+
+@profile_completion_required
+def lender_dashboard(request):
+    if request.method == 'POST':
+        amount = request.POST.get('amount')
+        interest_rate = request.POST.get('interest_rate')
+        duration_months = request.POST.get('duration_months')
+
+        if amount and interest_rate and duration_months:
+            LoanOffer.objects.create(
+                lender=request.user,
+                amount=amount,
+                interest_rate=interest_rate,
+                duration_months=duration_months
+            )
+        return redirect('lender_dashboard')
+
+    offers = LoanOffer.objects.filter(lender=request.user)
+    total_invested_raw = offers.aggregate(Sum('amount'))['amount__sum'] or 0
+    average_return = offers.aggregate(Avg('interest_rate'))['interest_rate__avg'] or 0
+    active_loans = offers.exclude(borrower__isnull=True).count()
+    total_invested = f"{total_invested_raw:,}"
+
+    context = {
+        'offers': offers,
+        'total_invested': total_invested,
+        'average_return': round(average_return, 2),
+        'active_loans': active_loans,
+    }
+    return render(request, 'lender_dashboard.html', context)
