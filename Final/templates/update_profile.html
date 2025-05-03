@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Update Profile</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+    }
+    .form-container {
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+    .form-container:hover {
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    .input-field {
+      transition: all 0.2s ease;
+      border: 1px solid #e2e8f0;
+    }
+    .input-field:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    .save-btn {
+      transition: all 0.3s ease;
+      letter-spacing: 0.5px;
+    }
+    .save-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px -1px rgba(185, 67, 16, 0.2), 0 2px 4px -1px rgba(16, 185, 129, 0.06);
+    }
+    .verification-btn {
+      transition: all 0.3s ease;
+    }
+    .verification-btn:hover {
+      transform: translateY(-1px);
+    }
+    .message-item {
+      animation: slideIn 0.3s ease-out forwards, fadeOut 0.5s ease 3.5s forwards;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; visibility: hidden; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-gray-50">
+  {% if messages %}
+    <div class="fixed top-4 right-4 z-50 space-y-3 w-80">
+      {% for message in messages %}
+        <div class="message-item flex items-start p-4 rounded-lg shadow-md
+          {% if message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200
+          {% else %}bg-red-50 text-red-800 border border-green-200{% endif %}">
+          <i class="fas {% if message.tags == 'error' %}fa-times-circle{% else %}fa-check-circle{% endif %} mt-1 mr-3"></i>
+          <div><p class="font-medium">{{ message }}</p></div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="form-container bg-white p-8 w-full max-w-2xl mx-4">
+    <div class="text-center mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-2">Update Profile</h2>
+      <p class="text-gray-500">Keep your information up to date</p>
+    </div>
+
+    <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {% csrf_token %}
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="name">Full Name</label>
+        <input type="text" id="name" name="name" value="{{ user_profile.name|default:'' }}" required class="input-field w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="phone_number">Phone Number</label>
+        <input type="text" id="phone_number" name="phone_number" value="{{ user_profile.phone_number|default:'' }}" required class="input-field w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="gender">Gender</label>
+        <select name="gender" id="gender" class="input-field w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500">
+          <option value="Male" {% if user_profile.gender == 'Male' %}selected{% endif %}>Male</option>
+          <option value="Female" {% if user_profile.gender == 'Female' %}selected{% endif %}>Female</option>
+          <option value="Other" {% if user_profile.gender == 'Other' %}selected{% endif %}>Other</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="married">Married</label>
+        <select name="married" id="married" class="input-field w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500">
+          <option value="Yes" {% if user_profile.married == 'Yes' %}selected{% endif %}>Yes</option>
+          <option value="No" {% if user_profile.married == 'No' %}selected{% endif %}>No</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="education">Education</label>
+        <select name="education" id="education" class="input-field w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500">
+          {% for option in user_profile.EDUCATION_CHOICES %}
+            <option value="{{ option.0 }}" {% if user_profile.education == option.0 %}selected{% endif %}>{{ option.1 }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="dependents">Dependents</label>
+        <input type="number" id="dependents" name="dependents" value="{{ user_profile.dependents|default:0 }}" required class="input-field w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="self_employed">Self Employed</label>
+        <select name="self_employed" id="self_employed" class="input-field w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500">
+          <option value="Yes" {% if user_profile.self_employed == 'Yes' %}selected{% endif %}>Yes</option>
+          <option value="No" {% if user_profile.self_employed == 'No' %}selected{% endif %}>No</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="income">Income (₹)</label>
+        <div class="relative">
+          <span class="absolute left-3 top-2.5 text-gray-500">₹</span>
+          <input type="number" id="income" name="income" value="{{ user_profile.income|default:0 }}" required class="input-field w-full pl-8 pr-4 py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500">
+        </div>
+      </div>
+
+      <div class="md:col-span-2">
+        <button type="submit" class="save-btn w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition duration-200">
+          <i class="fas fa-save mr-2"></i> Save Changes
+        </button>
+      </div>
+    </form>
+
+    <div class="mt-6 pt-6 border-t border-gray-200 md:col-span-2">
+      <div class="flex justify-between items-center">
+        <span class="text-sm font-medium text-gray-600">PAN Verification</span>
+        {% if user_profile.pan == "Yes" %}
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+            <i class="fas fa-check-circle mr-1.5"></i> Verified
+          </span>
+        {% else %}
+          <a href="/verify_pan/" class="verification-btn inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200">
+            <i class="fas fa-id-card mr-1.5"></i> Verify PAN
+          </a>
+        {% endif %}
+      </div>
+
+      <div class="mt-4 text-center">
+        <a href="{% url 'logout' %}" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium inline-flex items-center">
+          <i class="fas fa-sign-out-alt mr-1.5"></i> Logout
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    setTimeout(() => {
+      const messages = document.querySelectorAll('.message-item');
+      messages.forEach(msg => {
+        msg.style.opacity = '0';
+        setTimeout(() => msg.remove(), 500);
+      });
+    }, 4000);
+  </script>
+</body>
+</html>

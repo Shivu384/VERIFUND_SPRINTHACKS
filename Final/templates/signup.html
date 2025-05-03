@@ -14,7 +14,7 @@
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
-  {% load socialaccount %}
+
 
   <div class="container mx-auto flex items-center justify-center min-h-screen p-4">
     <!-- Left Welcome Section -->
@@ -60,7 +60,7 @@
 
         <div class="text-center text-gray-500 mb-2">OR</div>
 
-        <a href="{% provider_login_url 'google' %}">
+        <a href="#">
           <button type="button" id="rs-google" class="btn btn-outline-danger w-100 flex items-center justify-center gap-2 mb-4">
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5">
             <span>Sign up with Google</span>
@@ -68,7 +68,7 @@
         </a>
 
         <div class="text-center mt-2">
-          <a id="rs-loginlink" href="/" class="text-sm text-blue-600 hover:underline">Already registered? Login</a>
+          <a id="rs-loginlink" href="/signin" class="text-sm text-blue-600 hover:underline">Already registered? Login</a>
         </div>
       </form>
     </div>

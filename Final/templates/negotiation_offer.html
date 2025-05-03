@@ -1,0 +1,240 @@
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Negotiation Offers - VeriFund</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-text {
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .status-badge {
+            transition: all 0.2s ease;
+        }
+        
+        .modal {
+            transition: opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 flex">
+
+    <!-- Sidebar -->
+    <div class="w-64 bg-gray-900 text-gray-100 h-screen fixed sidebar">
+        <div class="text-center py-6 px-4 border-b border-gray-800">          
+            <span class="text-xl font-bold text-gray-300">Veri<span class="gradient-text">Fund</span></span>
+        </div>
+        
+        <ul class="space-y-2 mt-6 p-4">
+            <li>
+                <a href="#" class="flex items-center px-4 py-3 rounded-lg sidebar-link transition-colors">
+                    <i class="fas fa-home mr-3 text-gray-400"></i> Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="#" class="flex items-center px-4 py-3 rounded-lg sidebar-link transition-colors">
+                    <i class="fas fa-hand-holding-usd mr-3 text-gray-400"></i> Loans
+                </a>
+            </li>
+            <li>
+                <a href="#" class="flex items-center px-4 py-3 rounded-lg sidebar-link transition-colors">
+                    <i class="fas fa-percentage mr-3 text-gray-400"></i> Offers
+                </a>
+            </li>
+            <li>
+                <a href="#" class="flex items-center px-4 py-3 rounded-lg sidebar-link bg-gray-800 transition-colors">
+                    <i class="fas fa-exchange-alt mr-3 text-blue-400"></i> Negotiation Offers
+                </a>
+            </li>
+            <li class="mt-8 border-t border-gray-800 pt-4">
+                <a href="#" class="flex items-center px-4 py-3 rounded-lg sidebar-link transition-colors">
+                    <i class="fas fa-sign-out-alt mr-3 text-gray-400"></i> Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 ml-64">
+        <div class="container mx-auto px-6 py-8">
+            <h1 class="text-2xl font-bold mb-6">Negotiation Offers</h1>
+            
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Borrower</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Original Offer</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proposed Terms</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Credit Info</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for negotiation in negotiations %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {{ negotiation.borrower.username }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                ₹{{ negotiation.original_offer.amount }} @ {{ negotiation.original_offer.interest_rate }}%
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                ₹{{ negotiation.proposed_amount }} @ {{ negotiation.proposed_interest_rate }}%
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% with negotiation.borrower.id as borrower_id %}
+                                    {% with borrower_info|get_item:borrower_id as info %}
+                                    <div class="text-sm">
+                                        <div>Limit: ₹{{ info.credit_limit }}</div>
+                                        <div>Used: ₹{{ info.total_loans }}</div>
+                                        <div>Remaining: ₹{{ info.remaining_limit }}</div>
+                                        {% if negotiation.proposed_amount > info.remaining_limit %}
+                                            <div class="text-red-500 text-xs mt-1">⚠ Exceeds remaining limit</div>
+                                        {% endif %}
+                                    </div>
+                                    {% endwith %}
+                                {% endwith %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full status-badge
+                                    {% if negotiation.status == 'accepted' %}bg-green-100 text-green-800
+                                    {% elif negotiation.status == 'rejected' %}bg-red-100 text-red-800
+                                    {% elif negotiation.status == 'countered' %}bg-blue-100 text-blue-800
+                                    {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                    {{ negotiation.get_status_display }}
+                                </span>
+                                {% if negotiation.lender_note %}
+                                <div class="text-xs text-gray-500 mt-1">{{ negotiation.lender_note }}</div>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                {% if negotiation.status == 'pending' %}
+                                <form method="post" class="flex space-x-2">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="negotiation_id" value="{{ negotiation.id }}">
+                                    <button name="action" value="accept" 
+                                        class="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600 transition-colors">
+                                        Accept
+                                    </button>
+                                    <button name="action" value="reject" 
+                                        class="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors">
+                                        Reject
+                                    </button>
+                                </form>
+                                {% elif negotiation.status == 'countered' %}
+                                <button class="text-blue-600 hover:text-blue-800 text-sm"
+                                    onclick="viewCounterOffer({{ negotiation.id }})">
+                                    View Counter
+                                </button>
+                                {% else %}
+                                <span class="text-gray-400 text-sm">No actions</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                                No negotiation offers available
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Counter Offer Modal -->
+    <div id="counterModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden modal">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">Counter Offer Details</h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="counterContent">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function viewCounterOffer(negotiationId) {
+        // In a real implementation, you would fetch this data from your backend
+        const counterData = {
+            amount: "10000",
+            interest_rate: "8.5",
+            duration_months: "12",
+            note: "We can offer this modified rate based on your credit profile."
+        };
+
+        document.getElementById('counterContent').innerHTML = `
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Amount</label>
+                    <p class="mt-1">₹${counterData.amount}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Interest Rate</label>
+                    <p class="mt-1">${counterData.interest_rate}%</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Duration</label>
+                    <p class="mt-1">${counterData.duration_months} months</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Lender's Note</label>
+                    <p class="mt-1 p-2 bg-gray-50 rounded">${counterData.note}</p>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button onclick="respondToCounter(${negotiationId}, 'accept')" 
+                        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">
+                        Accept
+                    </button>
+                    <button onclick="respondToCounter(${negotiationId}, 'reject')" 
+                        class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors">
+                        Reject
+                    </button>
+                </div>
+            </div>
+        `;
+        document.getElementById('counterModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('counterModal').classList.add('hidden');
+    }
+
+    function respondToCounter(negotiationId, action) {
+        // Here you would typically make an AJAX call to your backend
+        console.log(Negotiation ${negotiationId} ${action}ed);
+        closeModal();
+        // In a real implementation, you would refresh the page or update the UI
+        window.location.reload();
+    }
+    </script>
+</body>
+</html>
