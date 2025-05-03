@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+    <title>Profile</title>
+</head>
+<body>
+    {% if request.session.pan_verified %}
+    <div id="pan-verified-animation">
+        <p style="color: green; font-size: 20px;">🎉 PAN Verified Successfully!</p>
+        <!-- Add more fancy animation here -->
+    </div>
+    <script>
+        setTimeout(() => {
+            document.getElementById("pan-verified-animation").style.display = "none";
+        }, 5000); // Hide after 5 seconds
+    </script>
+    {% endif %}
+
+    <div class="px-4 py-4 ">
+        name: {{ user.profile.name }}
+        <br>
+        email: {{ user.email }}
+        <br>
+        phone number: {{ user.profile.phone_number }}
+        <br>
+        education: {{ user.profile.education }}
+        <br>
+        <button onclick="window.location.href='/update_profile/'">Complete Profile</button>
+        <br>
+
+        <!-- Change the button based on PAN status -->
+        {% if user_profile.pan == "Yes" %}
+            <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Verified</button>
+        {% else %}
+            <button onclick="window.location.href='/verify_pan/'" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Verify PAN</button>
+        {% endif %}
+    </div>
+</body>
+</html>

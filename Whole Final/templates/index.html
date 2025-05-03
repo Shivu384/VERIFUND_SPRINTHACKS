@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeriFund | Peer-to-Peer Lending</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm fixed w-full z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-handshake text-blue-600 text-xl mr-2"></i>
+                        <span class="text-xl font-bold text-gray-800">Veri<span class="gradient-text">Fund</span></span>
+                    </div>
+                </div>
+                <div class="hidden md:ml-6 md:flex md:items-center md:space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Home</a>
+                    <a href="../Borrower/dashboard.html" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">For Borrowers</a>
+                    <a href="../Lender/Dashboard.html" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">For Investors</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">About Us</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    {% if user.is_authenticated %}
+
+                    <a href="/portfolio" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Profile</a>
+                    <a href="/logout" class="ml-4 inline-flex items-center px-4 py-2.5 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 transition-all shadow-sm">
+                        Logout
+                    </a>
+                    {% else %}
+
+                    <a href="/signin" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Log In</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 to-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="lg:grid lg:grid-cols-2 lg:gap-12 items-center">
+                <div class="animate_animated animate_fadeInLeft">
+                    <h1 class="text-4xl md:text-5xl font-bold text-gray-800 leading-tight">
+                        <span class="gradient-text">Direct</span> Lending.<br>
+                        <span class="gradient-text">Better</span> Rates.
+                    </h1>
+                    <p class="mt-5 text-lg text-gray-600 max-w-lg">
+                        VeriFund connects borrowers with individual investors, cutting out the banks for lower rates and higher returns.
+                    </p>
+                    <div class="mt-8 flex flex-col sm:flex-row gap-4">
+                        <a href="/option" class="px-8 py-3.5 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 transition-all shadow-md hover:shadow-lg">
+                            Get Started
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="mt-12 lg:mt-0 animate_animated animate_fadeInRight">
+                    <div class="relative overflow-hidden rounded-xl shadow-xl h-96">
+                        <img src="https://media.licdn.com/dms/image/D5612AQEJInk9oNT41A/article-cover_image-shrink_720_1280/0/1699245667444?e=2147483647&v=beta&t=JdQP-wcSO_7yNynTvpclUq3IMpnOkJIScrTfI3fQGts" 
+                             alt="P2P lending dashboard" 
+                             class="w-full h-full object-cover">
+                        <div class="absolute bottom-6 left-6 bg-white p-4 rounded-lg shadow-md w-64">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 bg-blue-100 p-2 rounded-lg">
+                                    <i class="fas fa-percentage text-blue-600"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium text-gray-900">Average Returns</p>
+                                    <p class="text-sm text-green-600 font-semibold">8.5% - 12.5% APY</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Indicators -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="p-6 bg-white rounded-xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
+                    <div class="text-3xl font-bold text-blue-600">$250M+</div>
+                    <div class="mt-2 text-gray-600">Loans Funded</div>
+                </div>
+                <div class="p-6 bg-white rounded-xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
+                    <div class="text-3xl font-bold text-blue-600">9.2%</div>
+                    <div class="mt-2 text-gray-600">Avg. Borrower Rate</div>
+                </div>
+                <div class="p-6 bg-white rounded-xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
+                    <div class="text-3xl font-bold text-blue-600">11.4%</div>
+                    <div class="mt-2 text-gray-600">Avg. Investor Return</div>
+                </div>
+                <div class="p-6 bg-white rounded-xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
+                    <div class="text-3xl font-bold text-blue-600">99.7%</div>
+                    <div class="mt-2 text-gray-600">Verification Accuracy</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-extrabold text-gray-900">
+                    How <span class="gradient-text">VeriFund</span> Works
+                </h2>
+                <p class="mt-4 max-w-2xl text-xl text-gray-600 mx-auto">
+                    Simple steps to borrow or invest with confidence
+                </p>
+            </div>
+
+            <div class="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+                <!-- Step 1 -->
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 transition-all card-hover">
+                    <div class="flex items-center justify-center h-14 w-14 rounded-xl bg-blue-100 text-blue-600 mx-auto text-xl font-bold">1</div>
+                    <h3 class="mt-6 text-lg font-medium text-gray-800 text-center">Create Profile</h3>
+                    <p class="mt-4 text-gray-600 text-center">
+                        Complete your profile with basic information and verification.
+                    </p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 transition-all card-hover">
+                    <div class="flex items-center justify-center h-14 w-14 rounded-xl bg-blue-100 text-blue-600 mx-auto text-xl font-bold">2</div>
+                    <h3 class="mt-6 text-lg font-medium text-gray-800 text-center">Get Verified</h3>
+                    <p class="mt-4 text-gray-600 text-center">
+                        Our AI-powered system verifies your details in minutes.
+                    </p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 transition-all card-hover">
+                    <div class="flex items-center justify-center h-14 w-14 rounded-xl bg-blue-100 text-blue-600 mx-auto text-xl font-bold">3</div>
+                    <h3 class="mt-6 text-lg font-medium text-gray-800 text-center">Set Terms</h3>
+                    <p class="mt-4 text-gray-600 text-center">
+                        Borrowers request loans, investors set their criteria.
+                    </p>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 transition-all card-hover">
+                    <div class="flex items-center justify-center h-14 w-14 rounded-xl bg-blue-100 text-blue-600 mx-auto text-xl font-bold">4</div>
+                    <h3 class="mt-6 text-lg font-medium text-gray-800 text-center">Connect & Transact</h3>
+                    <p class="mt-4 text-gray-600 text-center">
+                        Matched parties agree terms and funds are transferred.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-300 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-12">
+                <div class="col-span-2">
+                    <div class="flex items-center">
+                        <i class="fas fa-handshake text-blue-500 text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-white">Veri<span class="gradient-text">Fund</span></span>
+                    </div>
+                    <p class="mt-4">
+                        The modern peer-to-peer lending platform connecting borrowers with investors for mutual benefit.
+                    </p>
+                    <div class="mt-6 flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-white text-sm font-semibold tracking-wider uppercase">Borrow</h3>
+                    <ul class="mt-4 space-y-3">
+                        <li><a href="#" class="hover:text-white transition-colors">Personal Loans</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Business Loans</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Loan Calculator</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Rates & Fees</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white text-sm font-semibold tracking-wider uppercase">Invest</h3>
+                    <ul class="mt-4 space-y-3">
+                        <li><a href="#" class="hover:text-white transition-colors">How It Works</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Expected Returns</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Risk Management</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Tax Information</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-16 border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-sm">© 2023 VeriFund. All rights reserved.</p>
+                <div class="mt-4 md:mt-0 flex space-x-8">
+                    <a href="#" class="text-sm hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="text-sm hover:text-white transition-colors">Terms of Service</a>
+                    <a href="#" class="text-sm hover:text-white transition-colors">Licenses</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

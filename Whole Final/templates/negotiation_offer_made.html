@@ -1,0 +1,134 @@
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6">Your Negotiations</h1>
+    
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Lender</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Original Offer</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Your Proposal</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Last Updated</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for negotiation in negotiations %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {{ negotiation.lender.username }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        ₹{{ negotiation.original_offer.amount }} @ {{ negotiation.original_offer.interest_rate }}%
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        ₹{{ negotiation.proposed_amount }} @ {{ negotiation.proposed_interest_rate }}%
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs rounded-full 
+                            {% if negotiation.status == 'accepted' %}bg-green-100 text-green-800
+                            {% elif negotiation.status == 'rejected' %}bg-red-100 text-red-800
+                            {% elif negotiation.status == 'countered' %}bg-blue-100 text-blue-800
+                            {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                            {{ negotiation.get_status_display }}
+                        </span>
+                        {% if negotiation.lender_note %}
+                        <div class="text-xs text-gray-600 mt-1">{{ negotiation.lender_note }}</div>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ negotiation.updated_at|timesince }} ago
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        {% if negotiation.status == 'accepted' %}
+                            <a href="#" 
+                               class="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600 transition-colors">
+                                Apply Now
+                            </a>
+                        {% elif negotiation.status == 'countered' %}
+                            <button onclick="viewCounterOffer({{ negotiation.id }})"
+                                class="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 transition-colors">
+                                View Counter
+                            </button>
+                        {% else %}
+                            <span class="text-gray-400 text-sm">N/A</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                        You haven't made any negotiation offers yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Counter Offer Modal (same as before) -->
+
+
+<script>
+function viewCounterOffer(negotiationId) {
+    // Fetch counter offer details from backend
+    fetch(`/api/negotiations/${negotiationId}/counter/`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('counterContent').innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Amount</label>
+                        <p class="mt-1">₹${data.amount}</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Interest Rate</label>
+                        <p class="mt-1">${data.interest_rate}%</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Duration</label>
+                        <p class="mt-1">${data.duration_months} months</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Lender's Note</label>
+                        <p class="mt-1 p-2 bg-gray-50 rounded">${data.note || 'No additional note provided'}</p>
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button onclick="respondToCounter(${negotiationId}, 'accept')" 
+                            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                            Accept
+                        </button>
+                        <button onclick="respondToCounter(${negotiationId}, 'reject')" 
+                            class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                            Reject
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('counterModal').classList.remove('hidden');
+        });
+}
+
+function closeModal() {
+    document.getElementById('counterModal').classList.add('hidden');
+}
+
+function respondToCounter(negotiationId, action) {
+    fetch(`/api/negotiations/${negotiationId}/respond/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({action: action})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            location.reload();
+        }
+    });
+}
+</script>

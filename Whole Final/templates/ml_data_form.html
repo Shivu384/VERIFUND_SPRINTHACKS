@@ -1,0 +1,155 @@
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Lending Application Assessment</h3>
+                </div>
+                <div class="card-body">
+                    {% if error %}
+                    <div class="alert alert-danger">
+                        {{ error }}
+                    </div>
+                    {% endif %}
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_month">Month:</label>
+                                {{ form.month }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_age">Age:</label>
+                                {{ form.age }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_occupation">Occupation:</label>
+                                {{ form.occupation }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_annual_income">Annual Income:</label>
+                                {{ form.annual_income }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_monthly_inhand_salary">Monthly Inhand Salary:</label>
+                                {{ form.monthly_inhand_salary }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_num_bank_accounts">Number of Bank Accounts:</label>
+                                {{ form.num_bank_accounts }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_num_credit_card">Number of Credit Cards:</label>
+                                {{ form.num_credit_card }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_interest_rate">Interest Rate:</label>
+                                {{ form.interest_rate }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_num_of_loan">Number of Loans:</label>
+                                {{ form.num_of_loan }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_delay_from_due_date">Average Delay (days):</label>
+                                {{ form.delay_from_due_date }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_num_of_delayed_payment">Number of Delayed Payments:</label>
+                                {{ form.num_of_delayed_payment }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_changed_credit_limit">Credit Limit Change:</label>
+                                {{ form.changed_credit_limit }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_num_credit_inquiries">Number of Credit Inquiries:</label>
+                                {{ form.num_credit_inquiries }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_credit_mix">Credit Mix:</label>
+                                {{ form.credit_mix }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_outstanding_debt">Outstanding Debt:</label>
+                                {{ form.outstanding_debt }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_credit_utilization_ratio">Credit Utilization Ratio:</label>
+                                {{ form.credit_utilization_ratio }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_credit_history_age">Credit History Age (months):</label>
+                                {{ form.credit_history_age }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_payment_of_min_amount">Payment of Minimum Amount:</label>
+                                {{ form.payment_of_min_amount }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_total_emi_per_month">Total EMI per Month:</label>
+                                {{ form.total_emi_per_month }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_amount_invested_monthly">Amount Invested Monthly:</label>
+                                {{ form.amount_invested_monthly }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_payment_behaviour">Payment Behavior:</label>
+                                {{ form.payment_behaviour }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_monthly_balance">Monthly Balance:</label>
+                                {{ form.monthly_balance }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="id_type_of_loan">Type of Loan:</label>
+                                {{ form.type_of_loan }}
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Submit Application</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
